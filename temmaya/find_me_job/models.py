@@ -40,6 +40,7 @@ class UserCVSector(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='user_cv_sectors')
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE, related_name='user_cv_sectors')
     cv = models.FileField(upload_to=user_cv_dir)
+    file_name = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

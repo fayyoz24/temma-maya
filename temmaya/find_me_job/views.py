@@ -12,7 +12,7 @@ class FullSectorListAPIView(APIView):
     """
     def get(self, request):
         sectors = Sector.objects.all()
-        serializer = FullSectorSerializer(sectors, many=True)
+        serializer = FullSectorSerializer(sectors, many=True, context={'request': request})
         return Response(serializer.data)
     
 class SectorListAPIView(APIView):
@@ -45,6 +45,31 @@ class UserCVSectorListAPIView(APIView):
         serializer = UserCVSectorSerializer(user_cvs, many=True)
         return Response(serializer.data)
 
+# class UserCVSectorCreateAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, sector_id):
+#         # Check if user already has a CV for this sector
+#         existing_cv = UserCVSector.objects.filter(
+#             user=request.user,
+#             sector_id=sector_id
+#         ).first()
+        
+#         if existing_cv:
+#             # Update the existing CV
+#             existing_cv.cv = request.data.get('cv')
+#             existing_cv.save()
+#             serializer = UserCVSectorSerializer(existing_cv)
+#             return Response(serializer.data, status=200)
+        
+#         # Create a new CV upload
+#         serializer = UserCVSectorSerializer(data=request.data, context={'request': request})
+#         if serializer.is_valid():
+#             sector=Sector.objects.get(id=sector_id)
+#             serializer.save(user=request.user, sector=sector)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserCVSectorCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -55,21 +80,38 @@ class UserCVSectorCreateAPIView(APIView):
             sector_id=sector_id
         ).first()
         
+        # Get the uploaded file
+        cv_file = request.FILES.get('cv')
+        if not cv_file:
+            return Response({"error": "No CV file provided"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Use the full filename with extension
+        filename = cv_file.name
+        
         if existing_cv:
             # Update the existing CV
-            existing_cv.cv = request.data.get('cv')
+            existing_cv.cv = cv_file
+            existing_cv.file_name = filename  # Use the complete filename
             existing_cv.save()
             serializer = UserCVSectorSerializer(existing_cv)
             return Response(serializer.data, status=200)
         
         # Create a new CV upload
-        serializer = UserCVSectorSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            sector=Sector.objects.get(id=sector_id)
-            serializer.save(user=request.user, sector=sector)
+        try:
+            sector = Sector.objects.get(id=sector_id)
+            cv_sector = UserCVSector(
+                user=request.user,
+                sector=sector,
+                cv=cv_file,
+                filename=filename
+            )
+            cv_sector.save()
+            serializer = UserCVSectorSerializer(cv_sector)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        except Sector.DoesNotExist:
+            return Response({"error": "Sector not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)    
 
 class UserCVSectorDetailAPIView(APIView):
     """

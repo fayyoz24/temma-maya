@@ -18,7 +18,7 @@ class SectorSerializer(serializers.ModelSerializer):
 class UserCVSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCVSector
-        fields = ['id', 'user', 'sector', 'cv', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'sector', 'file_name', 'cv', 'created_at', 'updated_at']
         read_only_fields = ['user', 'sector']
     
     def create(self, validated_data):
