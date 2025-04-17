@@ -4,8 +4,17 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import Sector, UserCVSector
-from .serializers import SectorSerializer, UserCVSectorSerializer
+from .serializers import SectorSerializer, UserCVSectorSerializer, FullSectorSerializer
 # Create your views here.
+class FullSectorListAPIView(APIView):
+    """
+    API view for listing all sectors
+    """
+    def get(self, request):
+        sectors = Sector.objects.all()
+        serializer = FullSectorSerializer(sectors, many=True)
+        return Response(serializer.data)
+    
 class SectorListAPIView(APIView):
     """
     API view for listing all sectors

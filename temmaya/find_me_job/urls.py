@@ -2,10 +2,11 @@ from django.urls import path
 from .views import (
     SectorDetailAPIView, SectorListAPIView, 
     UserCVSectorListAPIView, UserCVSectorDetailAPIView,
-    UserCVSectorCreateAPIView, 
+    UserCVSectorCreateAPIView, FullSectorListAPIView
 )
 urlpatterns = [
     path('sectors/', SectorListAPIView.as_view(), name='sector-list'),
+    path('full-sectors/', FullSectorListAPIView.as_view(), name='full-sector-list'),
     path('sectors/<int:sector_id>/', SectorDetailAPIView.as_view(), name='sector-detail'),
     path('user-cvs/', UserCVSectorListAPIView.as_view(), name='user-cv-list'),
     path('user-cvs/<int:pk>/', UserCVSectorDetailAPIView.as_view(), name='user-cv-detail'),

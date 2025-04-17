@@ -28,7 +28,7 @@ class Logo(models.Model):
 class Job(models.Model):
     title = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
-    Low_salary = models.IntegerField(default=0)
+    low_salary = models.IntegerField(default=0)
     high_salary = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
