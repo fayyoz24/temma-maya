@@ -1,0 +1,16 @@
+venv/
+env/
+.env
+media/
+staticfiles/
+static/
+__pycache__/
+commands.txt
+./migrations/__pycache__/
+db.sqlite3
+./temma/users/migrations/__pycache__/
+notes.txt
+test.ipynb
+view_test.py
+XGBoost_2nd_attempt_with__60k_with_new_data.joblib
+vectorizer_3rd.pickle
